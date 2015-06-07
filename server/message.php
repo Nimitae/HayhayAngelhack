@@ -5,12 +5,13 @@ require_once('lib/XMPPHP/XMPP.php');
 define("PRIVATE_CHAT", 1);
 define("GROUP_CHAT", 2);
 
-
-$_POST["username"] = "test3";
+/*
+$_POST["username"] = "test4";
 $_POST["type"] = GROUP_CHAT;
 $_POST["message"] = "test group chat";
-$_POST["threadID"] = 15;
-//$_POST["receiver"] = "zhongren@hayhay";
+$_POST["threadID"] = 18;
+//$_POST["receiver"] = "kkk@hayhay";
+*/
 
 $return = array();
 if (isset($_POST["username"]) && isset($_POST["type"]) && isset($_POST["message"])) {
@@ -39,7 +40,7 @@ if (isset($_POST["username"]) && isset($_POST["type"]) && isset($_POST["message"
             error_log($e->getMessage());
         }
     } else if ($messageType == GROUP_CHAT) {
-        $threadID = $_POST["threadID"];
+        $threadID = $_POST["receiver"];
         $sql = "SELECT * FROM subscription WHERE threadID = :threadID ;";
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(":threadID", $threadID);
@@ -60,6 +61,11 @@ if (isset($_POST["username"]) && isset($_POST["type"]) && isset($_POST["message"
             $return['result'] = "Failed";
             error_log($e->getMessage());
         }
+        $sql = "INSERT INTO messages VALUES (NULL, :threadID, :message);";
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(":threadID", $threadID);
+        $stmt->bindParam(":message", $_POST["message"]);
+        $stmt->execute();
     } else {
         $return['result'] = "Failed";
     }
