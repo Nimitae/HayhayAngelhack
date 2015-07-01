@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Hayhay Static</title>
+<link rel="stylesheet" type="text/css" href="main.css">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Nunito">
+<link rel="stylesheet" type="text/css" href="fullPage.js-master/jquery.fullPage.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="fullPage.js-master/jquery.fullPage.js"></script>
+</head>
+
+<body>   
+<div id="fullpage">
+    <div class="section static">
+        <div class="heading">
+            <img class="img-header" src="assets/img/hayhay.png">
+        </div>
+<!-- Start Tutorial -->
+        <div class="slide" id="tutorial">
+        <p class="tuttext">Welcome to hayhay!</p>
+            <img id="tutpic" src="assets/img/phone1.png">
+        <p class="smallred">FOMO no more</p>
+            <img id="more" src="assets/img/more1.png"><br><br><br><br><br>
+        </div>
+        
+        <div class="slide" id="tutorial">
+        <p class="tuttext">Choose a chat near you!</p>
+            <img id="tutpic" src="assets/img/phone2.png">
+        <p class="smallred">Reconnect to your surroundings</p>
+            <img id="more" src="assets/img/more2.png"><br><br><br><br><br>
+        </div>
+        
+        <div class="slide" id="tutorial">
+        <p class="tuttext">Start your own chat!</p>
+            <img id="tutpic" src="assets/img/phone4.png">
+        <p class="smallred">Express yourself wherever you are</p>
+            <img id="more" src="assets/img/more3.png"><br><br><br><br><br>
+        </div>
+        
+<!-- End Tutorial -->
+    
+<!-- Start PermGL -->    
+        <div class="slide" id="permgl">
+        <p class="permgltext">Let HAYHAY access your location so we can show you what's happening around you!</p><br><br><br>
+            <button class="button-big" onclick="getLocation()">I SAY YAY!</button><br><br>
+            <img id="more" src="assets/img/more4.png"><br><br><br><br>
+        <!-- NEED TO LINK STRAIGHT TO HOME PAGE or FIND A WAY TO EMBED INTERACTIVE MAP INTO SCREEN-->
+        </div>
+<!-- End PermGL -->
+    </div>
+</div>
+    
+<script>$(document).ready(function() {
+    $('#fullpage').fullpage();
+    controlarrows: false;
+});</script>
+</body>
+</html>

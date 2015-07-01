@@ -1,11 +1,85 @@
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+    }
+}
+
+function showPosition(position) {
+    lat = position.coords.latitude;
+    lon = position.coords.longitude;
+    latlon = new google.maps.LatLng(lat, lon)
+    mapholder = document.getElementById('mapholder')
+
+    var myOptions = {
+        center:latlon,zoom:14,
+        mapTypeId:google.maps.MapTypeId.ROADMAP,
+        mapTypeControl:false,
+        navigationControlOptions:{style:google.maps.NavigationControlStyle.SMALL},
+        disableDefaultUI:true
+    }
+
+    var map = new google.maps.Map(document.getElementById("mapholder"), myOptions);
+    var marker = new google.maps.Marker({position:latlon,map:map,title:"You are here!"});
+    session.here = {latitude: lat, longitude: lon};
+    function listThreads() {
+        var url = "http://www.nimitae.sg/hayhay/server/listing.php";
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {longitude: session.here.longitude, latitude: session.here.latitude, range: session.range},
+            success: populate,
+            error: whoops
+        });
+    };
+
+    function populate(list) {
+        obj = JSON.parse(list);
+        for (var i = 0; i < obj.threadList.length; i+=1) {
+            $("#home").append("<div class='row'> " + obj.threadList[i].threadID + ":\t" +
+                obj.threadList[i].title + "</div>");
+            makeMarker(map, obj.threadList[i]);
+        }
+    };
+    listThreads();
+}
+
+function makeMarker(map, curr) {
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(curr.latitude, curr.longitude),
+        map: map,
+        titile: curr.title
+    });
+    var clos = function () { return curr.threadID; }
+    google.maps.event.addListener(marker, 'click', function() { subscribe(clos()); })
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("An unknown error occurred.");
+            break;
+    }
+}
+
 var session = {
     connection: null,
-    user: "sarah@hayhay",
-    pass: "a",
+    user: "kkk@hayhay",
+    pass: "kkk",
     partner: null,
     thread: null,
     here: null,
     composing: null,
+    range: 1000000000,
 
     jid_to_id: function (jid) {
         return Strophe.getBareJidFromJid(jid)
@@ -52,20 +126,20 @@ var session = {
 
         if (body) {
             $(".messages").append(makeOtherRow(body));
+            session.scroll_chat();
         }
 
         return true;
     },
 
     scroll_chat: function (jid_id) {
-        var div = $('#chat-' + jid_id + ' .chat-messages').get(0);
-        div.scrollTop = div.scrollHeight;
+
     },
 };
 
 $(document).ready(function () {
     $(document).trigger('connect');
-
+    $(document).ready('listThreads');
     $('.chat-input').keypress( function (ev) {
         var jid = session.partner;
 
@@ -151,7 +225,9 @@ function sent() {
     // acknowledge it somehow
 };
 
-function newThread(title, range) {
+$('#nThread').click('newThread');
+
+function newThread(title) {
     var url = "http://www.nimitae.sg/hayhay/server/create.php";
     $.ajax({
         url: url,
@@ -165,29 +241,25 @@ function newThread(title, range) {
 function newThr(threadID) {
     session.thread = threadID;
     session.partner = null;
+    show('chatrm');
+    dispPartner();
 };
 
-function list() {
-    var url = "http://www.nimitae.sg/hayhay/server/listing.php";
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: {longitude: session.here.longitude, latitude: session.here.latitude, range: session.range},
-        success: listing,
-        error: whoops
-    });
-}
-
-function listing(threads) {
-
+function subscribe(thread) {
+    session.thread = thread;
+    session.partner = null;
+    show('chatrm');
+    dispPartner();
 }
 
 $(document).bind('connect', function () {
     var conn = new Strophe.Connection(
         'http://www.nimitae.sg/xmpp-httpbind/');
+
     conn.connect(session.user, session.pass, function (status) {
         if (status === Strophe.Status.CONNECTED) {
             $(document).trigger('connected');
+            console.log("connected");
         } else if (status === Strophe.Status.DISCONNECTED) {
             $(document).trigger('disconnected');
         }

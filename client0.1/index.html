@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Hayhay Static</title>
+    <link rel="stylesheet" type="text/css" href="Hayhay.css">
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Nunito">
+    <script src='strophejs-1.2.0/strophe.js'></script>
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+
+    <script> // menu pull //
+    $(function () {
+        var pull = $('#pull');
+        menu = $('nav ul');
+        menuHeight = menu.height();
+
+        $(pull).on('click', function (e) {
+            e.preventDefault();
+            menu.slideToggle();
+        });
+
+        $(window).resize(function () {
+            var w = $(window).width();
+            if (w > 320 && menu.is(':hidden')) {
+                menu.removeAttr('style');
+            }
+        });
+    });
+    </script>
+    <script> // show the given page, hide the rest
+    function show(elementID) {
+        // try to find the requested page and alert if it's not found
+        var ele = document.getElementById(elementID);
+        if (!ele) {
+            alert("no such element");
+            return;
+        }
+
+        // get all pages, loop through them and hide them
+        var pages = document.getElementsByClassName('main');
+        for (var i = 0; i < pages.length; i++) {
+            pages[i].style.display = 'none';
+        }
+
+        // then show the requested page
+        ele.style.display = 'block';
+    }
+    </script>
+</head>
+
+<body>
+
+<!-- Start Nav -->
+<nav class="navbar" style="">
+    <ul class="navbar">
+        <li onclick="show('home');"><a href="#">Map</a></li>
+        <li onclick="show('search');"><a href="#">Search</a></li>
+    </ul>
+    <a href="#" id="pull">Menu</a>
+</nav>
+<!-- End Nav  -->
+
+
+<div class="main" id="home" style="">
+    <br>
+    <div class="map">
+        <button class="button-big" onclick="getLocation()">Try It</button>
+
+        <div id=mapholder>
+        </div>
+    </div>
+    <div class="button-class">
+        <button class="button-big" onclick="show('chatstart');">Say Hay!</button>
+    </div>
+    <div class="threadrow" onclick="show('chatrm');">
+        Thread 1
+    </div>
+    <div class="threadrow" onclick="show('chatrm');">
+        Thread 2
+    </div>
+</div>
+
+<div class="main" id="chatrm" style="display:none">
+    <div class="threadrow">
+        Thread Title
+    </div>
+    <div class="chathistory">
+        <div class="chatrow">
+            <p class="message">Message 1</p>
+
+            <p class="timestamp">10pm</p>
+        </div>
+        <div class="chatrow">
+            <p class="message">Message 2</p>
+
+            <p class="timestamp">10pm</p>
+        </div>
+        <div class="mychatrow">
+            <p class="message">Message Mine</p>
+
+            <p class="timestamp">10pm</p>
+        </div>
+        <div class="chatrow">
+            <p class="message">Message 3</p>
+
+            <p class="timestamp">10pm</p>
+        </div>
+    </div>
+    <div class="chatentry">
+        <form id="sayhay"> <!-- enter button to send message -->
+            <input type="text"><br>
+        </form>
+    </div>
+</div>
+
+<div class="main" id="chatstart" style="display:none">
+    </br>
+    <div class="mapholder">
+        <img class="mapholder" src="demomap.jpg"><!-- CHANGE TO REAL MAP -->
+    </div>
+    </br>
+    <form id="sayhay4">
+        <input type="text"><br>
+    </form>
+    <div class="button-class">
+        <button class="button-big" type="submit" form="sayhay" value="start-thread">SAY HAY!</button>
+    </div>
+</div>
+
+<div class="main" id="search" style="display:none">
+    </br>
+    <form id="sayhay5">
+        <input type="text"><br>
+    </form>
+    <div class="mapholder">
+        <img class="mapholder" src="demomap.jpg"><!-- CHANGE TO REAL MAP -->
+    </div>
+</div>
+
+</body>
+</html>

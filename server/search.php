@@ -34,9 +34,9 @@ ON messages.threadID=thread.threadID WHERE message LIKE :searchterm;";
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script>
         function initialize() {
-            var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+            var myLatlng = new google.maps.LatLng(40.703063,-73.990460);
             var mapOptions = {
-                zoom: 1,
+                zoom: 10,
                 center: myLatlng
             };
             var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);

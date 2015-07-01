@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Hayhay Login</title>
+
+    <link rel="stylesheet" type="text/css" href="Hayhay.css">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Nunito">
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/login.js"></script>
+</head>
+<body>
+<!-- Start SignUp -->
+<div class="static" id="login" style="">
+    <div class="heading">
+        <h1>Sign Up</h1>
+    </div>
+    <br><br>
+
+    <form id="signup">
+        <p class="caps">VERIFY YOURSELF:</p>
+        <input id="email" type="text" name="email" placeholder="username"><br><br>
+
+        <p class="caps">SECURE YOURSELF:</p>
+        <input id="password" type="text" name="password" placeholder="password"><br><br>
+
+        <p class="caps">REPEAT PASSWORD:</p>
+        <input id="repeat" type="text" name="repeatpassword" placeholder="repeat password"><br><br>
+
+    </form>
+    <button class="button-big" type="submit" form="signup" value="submit" onclick="login();return false;">Sign Up</button>
+    <p class="fineprint">Already have an account? <a href="login.html">Sign in</a><br><br>
+        By clicking the "Sign Up" button above, you are indicating that you agree to our Terms of Use and Privacy
+        Policy.</p>
+</div>
+<!-- End SignUp -->
+</body>
+</html>
