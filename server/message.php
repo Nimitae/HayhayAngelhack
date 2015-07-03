@@ -40,7 +40,9 @@ if (isset($_POST["username"]) && isset($_POST["type"]) && isset($_POST["message"
             error_log($e->getMessage());
         }
     } else if ($messageType == GROUP_CHAT) {
+
         $threadID = $_POST["receiver"];
+        /*
         $sql = "SELECT * FROM subscription WHERE threadID = :threadID ;";
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(":threadID", $threadID);
@@ -61,6 +63,8 @@ if (isset($_POST["username"]) && isset($_POST["type"]) && isset($_POST["message"
             $return['result'] = "Failed";
             error_log($e->getMessage());
         }
+        */
+        $return['result'] = "Success";
         $sql = "INSERT INTO messages VALUES (NULL, :threadID, :message);";
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(":threadID", $threadID);

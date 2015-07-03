@@ -66,7 +66,6 @@
 
 
 <div class="main" id="home" style="">
-    <br>
     <div class="map">
         <button class="button-big" onclick="getLocation()">Try It</button>
 
@@ -74,62 +73,26 @@
         </div>
     </div>
     <div class="button-class">
-        <button class="button-big" onclick="show('chatstart');">Say Hay!</button>
+        <button class="button-big" onclick="startThread()">Say Hay!</button>
     </div>
-    <div class="threadrow" onclick="show('chatrm');">
-        Thread 1
-    </div>
-    <div class="threadrow" onclick="show('chatrm');">
-        Thread 2
+    <div id="thread-list">
+
     </div>
 </div>
 
-<div class="main" id="chatrm" style="display:none">
-    <div class="threadrow">
+<div class="main" id="thread" style="display:none">
+    <div id="threadTitle" class="threadrow">
         Thread Title
     </div>
-    <div class="chathistory">
-        <div class="chatrow">
-            <p class="message">Message 1</p>
-
-            <p class="timestamp">10pm</p>
-        </div>
-        <div class="chatrow">
-            <p class="message">Message 2</p>
-
-            <p class="timestamp">10pm</p>
-        </div>
-        <div class="mychatrow">
-            <p class="message">Message Mine</p>
-
-            <p class="timestamp">10pm</p>
-        </div>
-        <div class="chatrow">
-            <p class="message">Message 3</p>
-
-            <p class="timestamp">10pm</p>
-        </div>
+    <div id="chathistory" class="chathistory">
     </div>
     <div class="chatentry">
-        <form id="sayhay"> <!-- enter button to send message -->
-            <input type="text"><br>
+        <form onsubmit="sendMessage(this);return false;" id="sayhay"> <!-- enter button to send message -->
+            <input id="newmessage" type="text"><br>
         </form>
     </div>
 </div>
 
-<div class="main" id="chatstart" style="display:none">
-    </br>
-    <div class="mapholder">
-        <img class="mapholder" src="demomap.jpg"><!-- CHANGE TO REAL MAP -->
-    </div>
-    </br>
-    <form id="sayhay4">
-        <input type="text"><br>
-    </form>
-    <div class="button-class">
-        <button class="button-big" type="submit" form="sayhay" value="start-thread">SAY HAY!</button>
-    </div>
-</div>
 
 <div class="main" id="search" style="display:none">
     </br>

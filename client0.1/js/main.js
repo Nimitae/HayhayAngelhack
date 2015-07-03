@@ -1,6 +1,11 @@
 $(document).ready(function () {
     var username = localStorage.getItem("username");
+    var password = localStorage.getItem("password");
     console.log("Username: " + username);
+    console.log("Password: " + username);
+    if (localStorage.getItem("username") == null || localStorage.getItem("password") == null) {
+        window.location.replace("login.html");
+    }
 });
 
 function getLocation() {
@@ -11,42 +16,108 @@ function getLocation() {
 }
 
 function showPosition(position) {
+    localStorage.setItem("latitude", position.coords.latitude);
+    localStorage.setItem("longitude", position.coords.longitude);
+    console.log("Latitude: " + localStorage.getItem("latitude") + ", Longitude: " + localStorage.getItem("longitude"));
     lat = position.coords.latitude;
     lon = position.coords.longitude;
     latlon = new google.maps.LatLng(lat, lon);
     mapholder = document.getElementById('mapholder');
     var myOptions = {
-        center: latlon, zoom: 14,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        center: latlon, zoom: 19,
+        scrollwheel: false,
+        navigationControl: false,
         mapTypeControl: false,
+        scaleControl: false,
+        draggable: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
         navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
         disableDefaultUI: true
     };
 
     var map = new google.maps.Map(mapholder, myOptions);
-    var marker = new google.maps.Marker({position: latlon, map: map, title: "You are here!"});
+    //var marker = new google.maps.Marker({position: latlon, map: map, title: "You are here!"});
     // session.here = {latitude: lat, longitude: lon};
-    /* function listThreads() {
-     var url = "http://www.nimitae.sg/hayhay/server/listing.php";
-     $.ajax({
-     url: url,
-     type: "POST",
-     data: {longitude: session.here.longitude, latitude: session.here.latitude, range: session.range},
-     success: populate,
-     error: whoops
-     });
-     }*/
-/*
+    function listThreads() {
+        var url = "http://www.nimitae.sg/hayhay/server/listing.php";
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {longitude: localStorage.getItem("longitude"), latitude: localStorage.getItem("latitude"), range: 1},
+            success: populate,
+            error: whoops
+        });
+    }
+
     function populate(list) {
+        clearThreadList();
         obj = JSON.parse(list);
+        console.log(list);
         for (var i = 0; i < obj.threadList.length; i += 1) {
-            $("#home").append("<div class='row'> " + obj.threadList[i].threadID + ":\t" +
+            $("#thread-list").append("<div class='threadrow' onclick='viewThread(" + obj.threadList[i].threadID + ");' >" + obj.threadList[i].threadID + ":\t" +
                 obj.threadList[i].title + "</div>");
             makeMarker(map, obj.threadList[i]);
         }
     }
-*/
-    // listThreads();
+
+    listThreads();
+}
+
+function makeMarker(map, curr) {
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(curr.latitude, curr.longitude),
+        map: map,
+        title: curr.title
+    });
+    var clos = function () {
+        return curr.threadID;
+    };
+    google.maps.event.addListener(marker, 'click', function () {
+        viewThread(clos());
+    })
+}
+
+function viewThread(threadID) {
+    show("thread");
+    console.log("Viewing threadID: " + threadID);
+    var url = "http://www.nimitae.sg/hayhay/server/threadmessage.php";
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {threadID: threadID},
+        success: processThreadMessages,
+        error: whoops
+    });
+}
+
+function processThreadMessages(data) {
+    obj = JSON.parse(data);
+    console.log(data);
+    var threadTitleDOM = document.getElementById("threadTitle");
+    threadTitleDOM.innerHTML = obj.threadTitle;
+
+    localStorage.setItem("threadID", obj.threadID);
+    console.log(localStorage.getItem("threadID"));
+
+    clearChatHistory();
+
+    for (var i = 0; i < obj.messageList.length; i += 1) {
+        $("#chathistory").append("<div class='chatrow' style='border-left-color:" + getRandomColor() + " '><p class='message'>" + obj.messageList[i].messageContent + "</p><p class='timestamp'>STUB TIME</p></div>");
+    }
+}
+
+function clearChatHistory() {
+    var chatHistory = document.getElementById("chathistory");
+    while (chatHistory.firstChild) {
+        chatHistory.removeChild(chatHistory.firstChild);
+    }
+}
+
+function clearThreadList() {
+    var threadList = document.getElementById("thread-list");
+    while (threadList.firstChild) {
+        threadList.removeChild(threadList.firstChild);
+    }
 }
 
 function showError(error) {
@@ -64,4 +135,62 @@ function showError(error) {
             alert("An unknown error occurred.");
             break;
     }
+}
+
+function startThread() {
+    var text = prompt("Say Hay! (Enter a title)", "");
+    if (!isBlank(text)) {
+        var url = "http://www.nimitae.sg/hayhay/server/create.php";
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {title: text, longitude: localStorage.getItem("longitude"), latitude: localStorage.getItem("latitude"), username: localStorage.getItem("username")},
+            success: processNewThread,
+            error: whoops
+        });
+    }
+}
+
+function processNewThread(data) {
+    console.log(data);
+    obj = JSON.parse(data);
+    localStorage.setItem("threadID", obj.threadID);
+    viewThread(obj.threadID);
+}
+
+function whoops() {
+    console.log("whoops");
+    //TODO: Something went wrong with ajax
+}
+
+function sendMessage(obj) {
+    console.log("Sending message to threadID: " + localStorage.getItem("threadID"));
+    var message = document.getElementById("newmessage").value;
+    console.log("Message is: " + message);
+    var url = "http://www.nimitae.sg/hayhay/server/message.php";
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {username: localStorage.getItem("username"), type: 2, message: message, receiver: localStorage.getItem("threadID")},
+        success: processSentMessageResponse,
+        error: whoops
+    });
+}
+
+function processSentMessageResponse(data) {
+    console.log(data);
+    viewThread(localStorage.getItem("threadID"));
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function isBlank(str) {
+    return (!str || /^\s*$/.test(str));
 }
