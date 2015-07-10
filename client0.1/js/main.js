@@ -2,7 +2,7 @@ $(document).ready(function () {
     var username = localStorage.getItem("username");
     var password = localStorage.getItem("password");
     console.log("Username: " + username);
-    console.log("Password: " + username);
+    console.log("Password: " + password);
     if (localStorage.getItem("username") == null || localStorage.getItem("password") == null) {
         window.location.replace("login.html");
     }
@@ -39,7 +39,7 @@ function showPosition(position) {
     //var marker = new google.maps.Marker({position: latlon, map: map, title: "You are here!"});
     // session.here = {latitude: lat, longitude: lon};
     function listThreads() {
-        var url = "http://www.nimitae.sg/hayhay/server/listing.php";
+        var url = "http://hayhay.nimitae.sg/server/listing.php";
         $.ajax({
             url: url,
             type: "POST",
@@ -80,7 +80,7 @@ function makeMarker(map, curr) {
 function viewThread(threadID) {
     show("thread");
     console.log("Viewing threadID: " + threadID);
-    var url = "http://www.nimitae.sg/hayhay/server/threadmessage.php";
+    var url = "http://hayhay.nimitae.sg/server/threadmessage.php";
     $.ajax({
         url: url,
         type: "POST",
@@ -101,8 +101,19 @@ function processThreadMessages(data) {
 
     clearChatHistory();
 
+    var colorToUserObj = {};
     for (var i = 0; i < obj.messageList.length; i += 1) {
-        $("#chathistory").append("<div class='chatrow' style='border-left-color:" + getRandomColor() + " '><p class='message'>" + obj.messageList[i].messageContent + "</p><p class='timestamp'>STUB TIME</p></div>");
+        if (colorToUserObj.hasOwnProperty(obj.messageList[i].username)) {
+
+        } else {
+            colorToUserObj[obj.messageList[i].username] = getRandomColor();
+        }
+
+        if (obj.messageList[i].username == localStorage.getItem("username")) {
+            $("#chathistory").append("<div class='mychatrow'><p class='message'>" + obj.messageList[i].messageContent + "</p><p class='timestamp'>" + obj.messageList[i].timeMessage + "</p></div>");
+        } else {
+            $("#chathistory").append("<div class='chatrow' style='border-left-color:" + colorToUserObj[obj.messageList[i].username] + " '><p class='message'>" + obj.messageList[i].messageContent + "</p><p class='timestamp'>" + obj.messageList[i].timeMessage + "</p></div>");
+        }
     }
 }
 
@@ -140,11 +151,16 @@ function showError(error) {
 function startThread() {
     var text = prompt("Say Hay! (Enter a title)", "");
     if (!isBlank(text)) {
-        var url = "http://www.nimitae.sg/hayhay/server/create.php";
+        var url = "http://hayhay.nimitae.sg/server/create.php";
         $.ajax({
             url: url,
             type: "POST",
-            data: {title: text, longitude: localStorage.getItem("longitude"), latitude: localStorage.getItem("latitude"), username: localStorage.getItem("username")},
+            data: {
+                title: text,
+                longitude: localStorage.getItem("longitude"),
+                latitude: localStorage.getItem("latitude"),
+                username: localStorage.getItem("username")
+            },
             success: processNewThread,
             error: whoops
         });
@@ -167,11 +183,17 @@ function sendMessage(obj) {
     console.log("Sending message to threadID: " + localStorage.getItem("threadID"));
     var message = document.getElementById("newmessage").value;
     console.log("Message is: " + message);
-    var url = "http://www.nimitae.sg/hayhay/server/message.php";
+    var url = "http://hayhay.nimitae.sg/server/message.php";
+    document.getElementById("newmessage").value = "";
     $.ajax({
         url: url,
         type: "POST",
-        data: {username: localStorage.getItem("username"), type: 2, message: message, receiver: localStorage.getItem("threadID")},
+        data: {
+            username: localStorage.getItem("username"),
+            type: 2,
+            message: message,
+            receiver: localStorage.getItem("threadID")
+        },
         success: processSentMessageResponse,
         error: whoops
     });
@@ -193,4 +215,63 @@ function getRandomColor() {
 
 function isBlank(str) {
     return (!str || /^\s*$/.test(str));
+}
+
+function searchNearby() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(searchMap, showError);
+    } else {
+    }
+}
+
+function searchMap(position) {
+    localStorage.setItem("latitude", position.coords.latitude);
+    localStorage.setItem("longitude", position.coords.longitude);
+    console.log("Latitude: " + localStorage.getItem("latitude") + ", Longitude: " + localStorage.getItem("longitude"));
+    lat = position.coords.latitude;
+    lon = position.coords.longitude;
+    latlon = new google.maps.LatLng(lat, lon);
+    mapholder = document.getElementById('mapholder2');
+    var myOptions = {
+        center: latlon, zoom: 19,
+        scrollwheel: false,
+        navigationControl: false,
+        mapTypeControl: false,
+        scaleControl: false,
+        draggable: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+        disableDefaultUI: true
+    };
+git
+    var map = new google.maps.Map(mapholder, myOptions);
+    //var marker = new google.maps.Marker({position: latlon, map: map, title: "You are here!"});
+    // session.here = {latitude: lat, longitude: lon};
+    function listThreads() {
+        var url = "http://hayhay.nimitae.sg/server/search2.php";
+        var searchText = document.getElementById('searchText').value;
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {search: searchText},
+            success: populate,
+            error: whoops
+        });
+    }
+
+    function populate(list) {
+        clearThreadList();
+        obj = JSON.parse(list);
+        console.log(list);
+        if (obj.hasOwnProperty('threadList')) {
+            for (var i = 0; i < obj.threadList.length; i += 1) {
+                $("#thread-list").append("<div class='threadrow' onclick='viewThread(" + obj.threadList[i].threadID + ");' >" + obj.threadList[i].threadID + ":\t" +
+                    obj.threadList[i].title + "</div>");
+                makeMarker(map, obj.threadList[i]);
+            }
+        }
+    }
+
+    listThreads();
+
 }

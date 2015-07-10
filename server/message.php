@@ -65,10 +65,12 @@ if (isset($_POST["username"]) && isset($_POST["type"]) && isset($_POST["message"
         }
         */
         $return['result'] = "Success";
-        $sql = "INSERT INTO messages VALUES (NULL, :threadID, :message);";
+        $sql = "INSERT INTO messages VALUES (NULL, :threadID, :message, :username, :messagetime);";
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(":threadID", $threadID);
         $stmt->bindParam(":message", $_POST["message"]);
+        $stmt->bindParam(":username", $_POST["username"]);
+        $stmt->bindParam(":messagetime", date('Y-m-d H:i:s',time()));
         $stmt->execute();
     } else {
         $return['result'] = "Failed";

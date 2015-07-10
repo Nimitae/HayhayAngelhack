@@ -17,7 +17,7 @@ if (isset($_POST["threadID"])) {
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $return['threadTitle'] =  $result[0]["title"];
 
-    $sql = "SELECT * FROM messages WHERE threadID = :threadID ORDER BY messageID ASC;";
+    $sql = "SELECT * FROM messages WHERE threadID = :threadID ORDER BY timemessage ASC;";
     $stmt = $dbh->prepare($sql);
     $stmt->bindParam(":threadID", $_POST["threadID"]);
     if ($stmt->execute()) {
@@ -28,6 +28,8 @@ if (isset($_POST["threadID"])) {
             $message =array();
             $message["messageID"] = $row["messageID"];
             $message["messageContent"] = $row["message"];
+            $message["username"] = $row["username"];
+            $message["timeMessage"] = $row["timemessage"];
             $resultArray[] = $message;
         }
         $return['messageList'] = $resultArray;

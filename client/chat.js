@@ -23,7 +23,7 @@ function showPosition(position) {
     var marker = new google.maps.Marker({position:latlon,map:map,title:"You are here!"});
     session.here = {latitude: lat, longitude: lon};
     function listThreads() {
-        var url = "http://www.nimitae.sg/hayhay/server/listing.php";
+        var url = "http://hayhay.nimitae.sg/server/listing.php";
         $.ajax({
             url: url,
             type: "POST",
@@ -203,7 +203,7 @@ function dispPartner() {
 }
 
 function send_msg(msg, type) {
-    var url = "http://www.nimitae.sg/hayhay/server/message.php";
+    var url = "http://hayhay.nimitae.sg/server/message.php";
     var other;
     if ( type == 1) {
         // pri
@@ -228,7 +228,7 @@ function sent() {
 $('#nThread').click('newThread');
 
 function newThread(title) {
-    var url = "http://www.nimitae.sg/hayhay/server/create.php";
+    var url = "http://hayhay.nimitae.sg/server/create.php";
     $.ajax({
         url: url,
         type: "POST",

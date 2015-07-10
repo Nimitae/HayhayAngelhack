@@ -4,8 +4,8 @@ $(document).ready(function() {
     }
 });
 
-function login() {
-    var url = "http://www.nimitae.sg/hayhay/server/register.php";
+function register() {
+    var url = "http://hayhay.nimitae.sg/server/register.php";
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
     var repeat = document.getElementById("repeat").value;
@@ -19,11 +19,30 @@ function login() {
         });
     } else {
         //TODO: Passwords not the same
+        alert("Passwords are not the same!");
     }
+}
+
+function login() {
+    var url = "http://hayhay.nimitae.sg/server/login.php";
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {username: email, password: password},
+        success: processResult,
+        error: whoops
+    });
+}
+
+function loginFailed() {
+
 }
 
 function processResult(data){
     var dataObj = jQuery.parseJSON(data);
+    console.log(data);
     if (dataObj.result == "Success"){
         var email = document.getElementById("email").value;
         var password = document.getElementById("password").value;
@@ -32,6 +51,7 @@ function processResult(data){
         window.location.replace("index.html");
     } else {
         //TODO: Failed to register new account
+        alert('Failed to login or register account!');
     }
 }
 

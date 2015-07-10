@@ -59,6 +59,12 @@ h1 {
     height: 400px;
     align-content: center;
 }
+
+#mapholder2 {
+    width: 100%;
+    height: 400px;
+    align-content: center;
+}
 /*==============================================
    BUTTON  STYLES    
  =============================================*/
